@@ -1,5 +1,7 @@
 class Product:
-    """Товар."""
+    """
+    Товар интернет-магазина.
+    """
     name: str
     description: str
     price: float
@@ -13,10 +15,15 @@ class Product:
 
 
 class Category:
-    """Категория товаров."""
+    """
+    Категория товаров.
+    """
+    total_categories: int = 0
+    total_products: int = 0
+
     name: str
     description: str
-    products: list  # список объектов Product
+    products: list
 
     def __init__(self, name: str, description: str, products: list = None) -> None:
         self.name = name
@@ -25,3 +32,6 @@ class Category:
             self.products = []
         else:
             self.products = products
+
+        Category.total_categories += 1
+        Category.total_products += len(self.products)
