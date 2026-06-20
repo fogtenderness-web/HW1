@@ -1,6 +1,7 @@
 import pytest
-from src.utils import load_categories_from_json
+
 from src.models import Category
+from src.utils import load_categories_from_json
 
 
 @pytest.fixture(autouse=True)
@@ -15,7 +16,7 @@ def test_load_categories_from_real_file():
     Тест загрузки категорий и товаров из data/products.json
     """
     # Загружаем данные из реального JSON-файла
-    categories = load_categories_from_json('data/products.json')
+    categories = load_categories_from_json("data/products.json")
 
     # Проверяем количество категорий
     assert len(categories) == 2
