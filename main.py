@@ -1,23 +1,22 @@
-from src.models import Product, Category
+from src.utils import load_categories_from_json
+from src.models import Category
+
 
 def main():
-    # Создаём несколько товаров
-    milk = Product("Молоко", "1 литр, 3.2%", 89.99, 15)
-    bread = Product("Хлеб", "Ржаной, нарезка", 54.50, 30)
+    categories = load_categories_from_json('data/products.json')
 
-    # Создаём категорию и добавляем товары
-    groceries = Category("Бакалея", "Продукты первой необходимости", [milk, bread])
+    print(f"Загружено категорий: {Category.total_categories}")
+    print(f"Загружено товаров: {Category.total_products}\n")
 
-    # Можно добавить ещё товар после создания категории
-    eggs = Product("Яйца", "10 штук, С0", 109.90, 20)
-    groceries.products.append(eggs)
+    for cat in categories:
+        print(f"Категория: {cat.name} ({len(cat.products)} товаров)")
+        for product in cat.products:
+            print(
+                f"  - {product.name}: {product.price:.2f} руб."
+                f" (в наличии: {product.quantity} шт.)"
+            )
+        print()
 
-    # Выведем информацию
-    print(f"Категория: {groceries.name}")
-    print(f"Описание: {groceries.description}")
-    print("Товары:")
-    for product in groceries.products:
-        print(f"  - {product.name}: {product.price} руб. (в наличии: {product.quantity} шт.)")
 
 if __name__ == "__main__":
     main()
