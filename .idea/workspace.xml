@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="208be70d-1e03-494e-8d8d-9132fb68642f" name="Changes" comment="Изменен gitignore">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="208be70d-1e03-494e-8d8d-9132fb68642f" name="Changes" comment="Исправлены ошибки" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -134,7 +132,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781961119197</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Исправлены ошибки">
+      <option name="closed" value="true" />
+      <created>1782213772587</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1782213772587</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -142,6 +148,7 @@
     <MESSAGE value="Написаны тесты, основной код, завершена структура проекта и добавлен ReadMe" />
     <MESSAGE value="Исправлены ошибки по pep8, доработан ReadMe, добавлено покрытие тестов с помощью coverage" />
     <MESSAGE value="Изменен gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="Изменен gitignore" />
+    <MESSAGE value="Исправлены ошибки" />
+    <option name="LAST_COMMIT_MESSAGE" value="Исправлены ошибки" />
   </component>
 </project>
