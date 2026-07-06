@@ -1,7 +1,6 @@
 import pytest
-
-from src.models import Category
 from src.utils import load_categories_from_json
+from src.models import Category
 
 
 @pytest.fixture(autouse=True)
@@ -12,10 +11,7 @@ def reset_counters():
 
 
 def test_load_categories_from_real_file():
-    """
-    Тест загрузки категорий и товаров из data/products.json
-    """
-    # Загружаем данные из реального JSON-файла
+    """Тест загрузки категорий и товаров из data/products.json"""
     categories = load_categories_from_json("data/products.json")
 
     # Проверяем количество категорий
@@ -24,28 +20,23 @@ def test_load_categories_from_real_file():
     # Проверяем первую категорию (Смартфоны)
     cat1 = categories[0]
     assert cat1.name == "Смартфоны"
-    assert len(cat1.products) == 3
+    assert cat1.product_count == 3
 
-    # Проверяем один из товаров первой категории
-    product1 = cat1.products[0]
-    assert product1.name == "Samsung Galaxy C23 Ultra"
-    assert product1.description == "256GB, Серый цвет, 200MP камера"
-    assert product1.price == 180000.0
-    assert product1.quantity == 5
-
-    # Проверяем второй товар
-    product2 = cat1.products[1]
-    assert product2.name == "Iphone 15"
-    assert product2.price == 210000.0
+    # Проверяем строковое представление товаров
+    expected_lines = [
+        "Samsung Galaxy C23 Ultra, 180000 руб. Остаток: 5 шт.",
+        "Iphone 15, 210000 руб. Остаток: 8 шт.",
+        "Xiaomi Redmi Note 11, 31000 руб. Остаток: 14 шт."
+    ]
+    expected_str = "\n".join(expected_lines)
+    assert cat1.products == expected_str
 
     # Проверяем вторую категорию (Телевизоры)
     cat2 = categories[1]
     assert cat2.name == "Телевизоры"
-    assert len(cat2.products) == 1
-    assert cat2.products[0].name == '55" QLED 4K'
-    assert cat2.products[0].price == 123000.0
+    assert cat2.product_count == 1
+    assert cat2.products == '55" QLED 4K, 123000 руб. Остаток: 7 шт.'
 
     # Проверяем обновление глобальных счётчиков
-    # При загрузке создано 2 категории и 4 товара (3+1)
     assert Category.total_categories == 2
     assert Category.total_products == 4

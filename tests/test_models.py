@@ -1,11 +1,9 @@
 import pytest
-
-from src.models import Category, Product
+from src.models import Product, Category
 
 
 @pytest.fixture(autouse=True)
 def reset_category_counters():
-    """Сброс счётчиков перед каждым тестом."""
     Category.total_categories = 0
     Category.total_products = 0
 
@@ -30,19 +28,21 @@ def test_category_initialization_with_products():
     p2 = Product("B", "desc2", 20.0, 10)
     cat = Category("Категория", "Описание", [p1, p2])
     assert cat.name == "Категория"
-    assert len(cat.products) == 2
-    assert cat.products[0] is p1
-    assert cat.products[1] is p2
+    assert cat.product_count == 2
+    expected_str = "A, 10 руб. Остаток: 5 шт.\nB, 20 руб. Остаток: 10 шт."
+    assert cat.products == expected_str
 
 
 def test_category_initialization_empty_list():
     cat = Category("Пусто", "Нет товаров", [])
-    assert cat.products == []
+    assert cat.product_count == 0
+    assert cat.products == ""
 
 
 def test_category_initialization_none():
     cat = Category("Пусто", "Описание", None)
-    assert cat.products == []
+    assert cat.product_count == 0
+    assert cat.products == ""
 
 
 def test_total_categories_counter():
@@ -73,3 +73,41 @@ def test_class_attributes_accessible_from_instance():
     cat = Category("Test", "desc", [Product("X", "y", 9.99, 1)])
     assert cat.total_categories == 1
     assert cat.total_products == 1
+
+
+def test_add_product():
+    cat = Category("Тест", "Описание")
+    cat.add_product(Product("Товар1", "описание", 100.0, 10))
+    assert cat.product_count == 1
+    assert cat.products == "Товар1, 100 руб. Остаток: 10 шт."
+    cat.add_product(Product("Товар2", "описание2", 200.0, 5))
+    assert cat.product_count == 2
+    assert cat.products == "Товар1, 100 руб. Остаток: 10 шт.\nТовар2, 200 руб. Остаток: 5 шт."
+
+
+def test_new_product_from_dict():
+    data = {
+        "name": "Тестовый товар",
+        "description": "Описание",
+        "price": 123.45,
+        "quantity": 7
+    }
+    product = Product.new_product(data)
+    assert product.name == "Тестовый товар"
+    assert product.description == "Описание"
+    assert product.price == 123.45
+    assert product.quantity == 7
+
+
+def test_new_product_with_string_numbers():
+    data = {
+        "name": "Товар",
+        "description": "...",
+        "price": "99.99",
+        "quantity": "5"
+    }
+    product = Product.new_product(data)
+    assert isinstance(product.price, float)
+    assert isinstance(product.quantity, int)
+    assert product.price == 99.99
+    assert product.quantity == 5
