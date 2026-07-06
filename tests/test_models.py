@@ -1,3 +1,4 @@
+import builtins  # обязательно для monkeypatch input
 import pytest
 from src.models import Product, Category
 
@@ -8,6 +9,7 @@ def reset_category_counters():
     Category.total_products = 0
 
 
+# ---------- Старые тесты Product ----------
 def test_product_initialization():
     product = Product("Молоко", "1 литр, 3.2%", 89.99, 15)
     assert product.name == "Молоко"
@@ -23,6 +25,35 @@ def test_product_different_values():
     assert product.quantity == 30
 
 
+def test_new_product_from_dict():
+    data = {
+        "name": "Тестовый товар",
+        "description": "Описание",
+        "price": 123.45,
+        "quantity": 7
+    }
+    product = Product.new_product(data)
+    assert product.name == "Тестовый товар"
+    assert product.description == "Описание"
+    assert product.price == 123.45
+    assert product.quantity == 7
+
+
+def test_new_product_with_string_numbers():
+    data = {
+        "name": "Товар",
+        "description": "...",
+        "price": "99.99",
+        "quantity": "5"
+    }
+    product = Product.new_product(data)
+    assert isinstance(product.price, float)
+    assert isinstance(product.quantity, int)
+    assert product.price == 99.99
+    assert product.quantity == 5
+
+
+# ---------- Старые тесты Category ----------
 def test_category_initialization_with_products():
     p1 = Product("A", "desc1", 10.0, 5)
     p2 = Product("B", "desc2", 20.0, 10)
@@ -85,54 +116,55 @@ def test_add_product():
     assert cat.products == "Товар1, 100 руб. Остаток: 10 шт.\nТовар2, 200 руб. Остаток: 5 шт."
 
 
-def test_new_product_from_dict():
-    data = {
-        "name": "Тестовый товар",
-        "description": "Описание",
-        "price": 123.45,
-        "quantity": 7
-    }
-    product = Product.new_product(data)
-    assert product.name == "Тестовый товар"
-    assert product.description == "Описание"
-    assert product.price == 123.45
-    assert product.quantity == 7
-
-
-def test_new_product_with_string_numbers():
-    data = {
-        "name": "Товар",
-        "description": "...",
-        "price": "99.99",
-        "quantity": "5"
-    }
-    product = Product.new_product(data)
-    assert isinstance(product.price, float)
-    assert isinstance(product.quantity, int)
-    assert product.price == 99.99
-    assert product.quantity == 5
-
-
+# ---------- Новые тесты для цены ----------
 def test_product_price_getter():
-        """Проверяем, что геттер цены работает корректно."""
-        product = Product("Тест", "описание", 100.0, 10)
-        assert product.price == 100.0
+    """Геттер цены работает корректно."""
+    product = Product("Тест", "описание", 100.0, 10)
+    assert product.price == 100.0
 
-def test_product_price_setter_valid():
-        """Проверяем установку корректной цены."""
-        product = Product("Тест", "описание", 100.0, 10)
-        product.price = 150.0
-        assert product.price == 150.0
-def test_product_price_setter_invalid(capsys):
-        """Проверяем, что нельзя установить нулевую или отрицательную цену."""
-        product = Product("Тест", "описание", 100.0, 10)
 
-        product.price = 0
-        captured = capsys.readouterr()
-        assert "Цена не должна быть нулевая или отрицательная" in captured.out
-        assert product.price == 100.0  # цена не изменилась
+def test_product_price_setter_increase_no_input(monkeypatch):
+    """Повышение цены не запрашивает подтверждение."""
+    product = Product("Товар", "описание", 100.0, 5)
+    # Если input будет вызван, тест упадёт
+    monkeypatch.setattr(builtins, "input", lambda _: pytest.fail("input не должен вызываться"))
+    product.price = 150.0
+    assert product.price == 150.0
 
-        product.price = -50
-        captured = capsys.readouterr()
-        assert "Цена не должна быть нулевая или отрицательная" in captured.out
-        assert product.price == 100.0  # цена не изменилась
+
+def test_product_price_setter_decrease_confirmation_yes(monkeypatch):
+    """Понижение цены с подтверждением 'y'."""
+    product = Product("Товар", "описание", 200.0, 5)
+    monkeypatch.setattr(builtins, "input", lambda _: "y")
+    product.price = 150.0
+    assert product.price == 150.0
+
+
+def test_product_price_setter_decrease_confirmation_no(monkeypatch, capsys):
+    """Понижение цены с отказом (ответ 'n')."""
+    product = Product("Товар", "описание", 200.0, 5)
+    monkeypatch.setattr(builtins, "input", lambda _: "n")
+    product.price = 150.0
+    captured = capsys.readouterr()
+    assert "Действие отменено" in captured.out
+    assert product.price == 200.0  # цена не изменилась
+
+
+def test_product_price_setter_zero(monkeypatch, capsys):
+    """Нулевая цена недопустима, input не вызывается."""
+    product = Product("Товар", "описание", 100.0, 5)
+    monkeypatch.setattr(builtins, "input", lambda _: pytest.fail("input не должен вызываться"))
+    product.price = 0
+    captured = capsys.readouterr()
+    assert "Цена не должна быть нулевая или отрицательная" in captured.out
+    assert product.price == 100.0
+
+
+def test_product_price_setter_negative(monkeypatch, capsys):
+    """Отрицательная цена недопустима, input не вызывается."""
+    product = Product("Товар", "описание", 100.0, 5)
+    monkeypatch.setattr(builtins, "input", lambda _: pytest.fail("input не должен вызываться"))
+    product.price = -10.0
+    captured = capsys.readouterr()
+    assert "Цена не должна быть нулевая или отрицательная" in captured.out
+    assert product.price == 100.0
