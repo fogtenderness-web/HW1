@@ -111,3 +111,28 @@ def test_new_product_with_string_numbers():
     assert isinstance(product.quantity, int)
     assert product.price == 99.99
     assert product.quantity == 5
+
+
+def test_product_price_getter():
+        """Проверяем, что геттер цены работает корректно."""
+        product = Product("Тест", "описание", 100.0, 10)
+        assert product.price == 100.0
+
+def test_product_price_setter_valid():
+        """Проверяем установку корректной цены."""
+        product = Product("Тест", "описание", 100.0, 10)
+        product.price = 150.0
+        assert product.price == 150.0
+def test_product_price_setter_invalid(capsys):
+        """Проверяем, что нельзя установить нулевую или отрицательную цену."""
+        product = Product("Тест", "описание", 100.0, 10)
+
+        product.price = 0
+        captured = capsys.readouterr()
+        assert "Цена не должна быть нулевая или отрицательная" in captured.out
+        assert product.price == 100.0  # цена не изменилась
+
+        product.price = -50
+        captured = capsys.readouterr()
+        assert "Цена не должна быть нулевая или отрицательная" in captured.out
+        assert product.price == 100.0  # цена не изменилась
