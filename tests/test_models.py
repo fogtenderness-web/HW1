@@ -10,6 +10,27 @@ def reset_category_counters():
 
 
 # ---------- Тесты Product ----------
+def test_product_addition():
+    p1 = Product("Товар A", "описание", 100.0, 10)   # стоимость 1000
+    p2 = Product("Товар B", "описание", 200.0, 2)     # стоимость 400
+    result = p1 + p2
+    assert result == 1400.0
+    assert isinstance(result, float)
+
+
+def test_product_addition_different_prices():
+    p1 = Product("A", "", 50.5, 3)   # 151.5
+    p2 = Product("B", "", 99.99, 1)  # 99.99
+    result = p1 + p2
+    assert result == 251.49
+
+
+def test_product_addition_invalid_type():
+    p1 = Product("A", "", 10.0, 5)
+    with pytest.raises(TypeError):
+        _ = p1 + "не продукт"
+
+
 def test_product_initialization():
     product = Product("Молоко", "1 литр, 3.2%", 89.99, 15)
     assert product.name == "Молоко"

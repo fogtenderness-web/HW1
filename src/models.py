@@ -16,6 +16,14 @@ class Product:
         """Строковое отображение товара: Название, X руб. Остаток: X шт."""
         return f"{self.name}, {self.price:.0f} руб. Остаток: {self.quantity} шт."
 
+    def __add__(self, other: "Product") -> float:
+        """
+        Сложение двух продуктов: возвращает сумму полных стоимостей
+        """
+        if isinstance(other, Product):
+            return self.price * self.quantity + other.price * other.quantity
+        return NotImplemented
+
     @property
     def price(self) -> float:
         return self.__price
