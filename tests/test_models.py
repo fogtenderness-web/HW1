@@ -9,6 +9,7 @@ def reset_category_counters():
     Category.total_products = 0
 
 
+# ---------- Тесты Product ----------
 def test_product_initialization():
     product = Product("Молоко", "1 литр, 3.2%", 89.99, 15)
     assert product.name == "Молоко"
@@ -52,14 +53,22 @@ def test_new_product_with_string_numbers():
     assert product.quantity == 5
 
 
+def test_product_str():
+    product = Product("Телефон", "Смартфон", 50000.0, 10)
+    expected = "Телефон, 50000 руб. Остаток: 10 шт."
+    assert str(product) == expected
+
+
+# ---------- Тесты Category ----------
 def test_category_initialization_with_products():
     p1 = Product("A", "desc1", 10.0, 5)
     p2 = Product("B", "desc2", 20.0, 10)
     cat = Category("Категория", "Описание", [p1, p2])
     assert cat.name == "Категория"
     assert cat.product_count == 2
-    expected_str = "A, 10 руб. Остаток: 5 шт.\nB, 20 руб. Остаток: 10 шт.\n"
-    assert cat.products == expected_str
+    # Геттер products возвращает строку с \n после каждого товара
+    expected_products = "A, 10 руб. Остаток: 5 шт.\nB, 20 руб. Остаток: 10 шт.\n"
+    assert cat.products == expected_products
 
 
 def test_category_initialization_empty_list():
@@ -111,7 +120,8 @@ def test_add_product():
     assert cat.products == "Товар1, 100 руб. Остаток: 10 шт.\n"
     cat.add_product(Product("Товар2", "описание2", 200.0, 5))
     assert cat.product_count == 2
-    assert cat.products == "Товар1, 100 руб. Остаток: 10 шт.\nТовар2, 200 руб. Остаток: 5 шт.\n"
+    expected = "Товар1, 100 руб. Остаток: 10 шт.\nТовар2, 200 руб. Остаток: 5 шт.\n"
+    assert cat.products == expected
 
 
 def test_add_product_updates_total_products():
@@ -123,6 +133,15 @@ def test_add_product_updates_total_products():
     assert Category.total_products == 2
 
 
+def test_category_str():
+    p1 = Product("Товар1", "описание", 100.0, 10)
+    p2 = Product("Товар2", "описание", 200.0, 5)
+    cat = Category("Тест", "Описание", [p1, p2])
+    expected = "Тест, количество продуктов: 15 шт."
+    assert str(cat) == expected
+
+
+# ---------- Тесты цены (прежние) ----------
 def test_product_price_getter():
     product = Product("Тест", "описание", 100.0, 10)
     assert product.price == 100.0
@@ -167,50 +186,3 @@ def test_product_price_setter_negative(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "Цена не должна быть нулевая или отрицательная" in captured.out
     assert product.price == 100.0
-
-
-def test_product_price_setter_decrease_confirmation_no(monkeypatch, capsys):
-    """Понижение цены с отказом (ответ 'n')."""
-    product = Product("Товар", "описание", 200.0, 5)
-    monkeypatch.setattr(builtins, "input", lambda _: "n")
-    product.price = 150.0
-    captured = capsys.readouterr()
-    assert "Действие отменено" in captured.out
-    assert product.price == 200.0  # цена не изменилась
-
-
-def test_product_price_setter_zero(monkeypatch, capsys):
-    """Нулевая цена недопустима, input не вызывается."""
-    product = Product("Товар", "описание", 100.0, 5)
-    monkeypatch.setattr(
-        builtins, "input", lambda _: pytest.fail("input не должен вызываться")
-    )
-    product.price = 0
-    captured = capsys.readouterr()
-    assert "Цена не должна быть нулевая или отрицательная" in captured.out
-    assert product.price == 100.0
-
-
-def test_product_price_setter_negative(monkeypatch, capsys):
-    """Отрицательная цена недопустима, input не вызывается."""
-    product = Product("Товар", "описание", 100.0, 5)
-    monkeypatch.setattr(
-        builtins, "input", lambda _: pytest.fail("input не должен вызываться")
-    )
-    product.price = -10.0
-    captured = capsys.readouterr()
-    assert "Цена не должна быть нулевая или отрицательная" in captured.out
-    assert product.price == 100.0
-
-
-def test_add_product_updates_total_products():
-    """Проверяем, что add_product увеличивает общий счётчик товаров."""
-    Category.total_products = 0  # сбросим для чистоты (фикстура уже сбрасывает, но можно явно)
-    cat = Category("Тест", "Описание", [])  # 0 товаров
-    assert Category.total_products == 0
-
-    cat.add_product(Product("Товар1", "описание", 100.0, 10))
-    assert Category.total_products == 1
-
-    cat.add_product(Product("Товар2", "описание", 200.0, 5))
-    assert Category.total_products == 2
