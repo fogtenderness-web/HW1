@@ -10,27 +10,6 @@ def reset_category_counters():
 
 
 # ---------- Тесты Product ----------
-def test_product_addition():
-    p1 = Product("Товар A", "описание", 100.0, 10)   # стоимость 1000
-    p2 = Product("Товар B", "описание", 200.0, 2)     # стоимость 400
-    result = p1 + p2
-    assert result == 1400.0
-    assert isinstance(result, float)
-
-
-def test_product_addition_different_prices():
-    p1 = Product("A", "", 50.5, 3)   # 151.5
-    p2 = Product("B", "", 99.99, 1)  # 99.99
-    result = p1 + p2
-    assert result == 251.49
-
-
-def test_product_addition_invalid_type():
-    p1 = Product("A", "", 10.0, 5)
-    with pytest.raises(TypeError):
-        _ = p1 + "не продукт"
-
-
 def test_product_initialization():
     product = Product("Молоко", "1 литр, 3.2%", 89.99, 15)
     assert product.name == "Молоко"
@@ -80,6 +59,27 @@ def test_product_str():
     assert str(product) == expected
 
 
+def test_product_addition():
+    p1 = Product("Товар A", "описание", 100.0, 10)   # стоимость 1000
+    p2 = Product("Товар B", "описание", 200.0, 2)     # стоимость 400
+    result = p1 + p2
+    assert result == 1400.0
+    assert isinstance(result, float)
+
+
+def test_product_addition_different_prices():
+    p1 = Product("A", "", 50.5, 3)   # 151.5
+    p2 = Product("B", "", 99.99, 1)  # 99.99
+    result = p1 + p2
+    assert result == 251.49
+
+
+def test_product_addition_invalid_type():
+    p1 = Product("A", "", 10.0, 5)
+    with pytest.raises(TypeError):
+        _ = p1 + "не продукт"
+
+
 # ---------- Тесты Category ----------
 def test_category_initialization_with_products():
     p1 = Product("A", "desc1", 10.0, 5)
@@ -87,7 +87,6 @@ def test_category_initialization_with_products():
     cat = Category("Категория", "Описание", [p1, p2])
     assert cat.name == "Категория"
     assert cat.product_count == 2
-    # Геттер products возвращает строку с \n после каждого товара
     expected_products = "A, 10 руб. Остаток: 5 шт.\nB, 20 руб. Остаток: 10 шт.\n"
     assert cat.products == expected_products
 
@@ -162,7 +161,27 @@ def test_category_str():
     assert str(cat) == expected
 
 
-# ---------- Тесты цены (прежние) ----------
+def test_category_iteration():
+    p1 = Product("A", "desc1", 10.0, 5)
+    p2 = Product("B", "desc2", 20.0, 10)
+    p3 = Product("C", "desc3", 30.0, 15)
+    cat = Category("Категория", "Описание", [p1, p2, p3])
+
+    products_list = list(cat)
+    assert len(products_list) == 3
+    assert products_list[0] is p1
+    assert products_list[1] is p2
+    assert products_list[2] is p3
+
+
+def test_category_iteration_stop():
+    cat = Category("Пустая", "Нет товаров")
+    with pytest.raises(StopIteration):
+        iterator = iter(cat)
+        next(iterator)
+
+
+# ---------- Тесты цены ----------
 def test_product_price_getter():
     product = Product("Тест", "описание", 100.0, 10)
     assert product.price == 100.0
