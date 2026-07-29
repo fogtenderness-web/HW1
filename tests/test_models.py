@@ -226,3 +226,9 @@ def test_product_price_setter_negative(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "Цена не должна быть нулевая или отрицательная" in captured.out
     assert product.price == 100.0
+
+def test_addition_different_subclasses_raises():
+    phone = Smartphone("A", "", 100, 1, 1.0, "M", 64, "black")
+    grass = LawnGrass("B", "", 10, 1, "RU", 7, "green")
+    with pytest.raises(TypeError):
+     _ = phone + grass
