@@ -1,6 +1,6 @@
 import builtins
 import pytest
-from src.models import Product, Category
+from src.models import Product, Smartphone, LawnGrass, Category
 
 
 @pytest.fixture(autouse=True)
@@ -80,6 +80,13 @@ def test_product_addition_invalid_type():
         _ = p1 + "не продукт"
 
 
+def test_addition_different_subclasses_raises():
+    phone = Smartphone("A", "", 100, 1, 1.0, "M", 64, "black")
+    grass = LawnGrass("B", "", 10, 1, "RU", 7, "green")
+    with pytest.raises(TypeError):
+        _ = phone + grass
+
+
 # ---------- Тесты Category ----------
 def test_category_initialization_with_products():
     p1 = Product("A", "desc1", 10.0, 5)
@@ -151,6 +158,14 @@ def test_add_product_updates_total_products():
     assert Category.total_products == 1
     cat.add_product(Product("Товар2", "описание", 200.0, 5))
     assert Category.total_products == 2
+
+
+def test_add_product_invalid_type():
+    cat = Category("Тест", "Описание")
+    with pytest.raises(TypeError):
+        cat.add_product("не товар")    # строка не является Product
+    with pytest.raises(TypeError):
+        cat.add_product(42)            # число не является Product
 
 
 def test_category_str():
@@ -226,9 +241,3 @@ def test_product_price_setter_negative(monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "Цена не должна быть нулевая или отрицательная" in captured.out
     assert product.price == 100.0
-
-def test_addition_different_subclasses_raises():
-    phone = Smartphone("A", "", 100, 1, 1.0, "M", 64, "black")
-    grass = LawnGrass("B", "", 10, 1, "RU", 7, "green")
-    with pytest.raises(TypeError):
-     _ = phone + grass
