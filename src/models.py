@@ -2,11 +2,31 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 
+# ---------- Абстрактная база для коллекций продуктов ----------
+class AbstractProductCollection(ABC):
+    """Абстрактный класс для объектов, содержащих продукты (категория, заказ)."""
+
+    @property
+    @abstractmethod
+    def products(self) -> List['Product']:
+        """Список товаров, входящих в коллекцию."""
+        pass
+
+    @property
+    @abstractmethod
+    def total_quantity(self) -> int:
+        """Общее количество единиц товара (сумма quantity)."""
+        pass
+
+    @property
+    @abstractmethod
+    def total_cost(self) -> float:
+        """Общая стоимость всех товаров (сумма price * quantity)."""
+        pass
+
+
+# ---------- Базовые продукты ----------
 class BaseProduct(ABC):
-    """
-    Абстрактный базовый класс для всех продуктов.
-    Определяет общие атрибуты и поведение
-    """
     name: str
     description: str
     quantity: int
@@ -36,10 +56,7 @@ class BaseProduct(ABC):
 
 
 class ProductInitMixin:
-    """
-    Миксин, выводящий информацию о создании объекта.
-    При вызове __init__ печатает строку вида: ИмяКласса(аргументы).
-    """
+    """Миксин, печатающий параметры при создании объекта."""
     def __init__(self, *args, **kwargs) -> None:
         args_repr = []
         for a in args:
@@ -51,11 +68,7 @@ class ProductInitMixin:
 
 
 class Product(ProductInitMixin, BaseProduct):
-    """
-    Базовый класс товара. Наследует миксин вывода информации и абстрактный BaseProduct.
-    """
     def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
-        # Передаём общие поля в super().__init__ (попадает сначала в миксин, потом в BaseProduct)
         super().__init__(name=name, description=description, quantity=quantity)
         self.__price = price
 
@@ -88,7 +101,6 @@ class Product(ProductInitMixin, BaseProduct):
 
 
 class Smartphone(Product):
-    """Класс для смартфонов."""
     efficiency: float
     model: str
     memory: int
@@ -104,7 +116,6 @@ class Smartphone(Product):
 
 
 class LawnGrass(Product):
-    """Класс для травы газонной."""
     country: str
     germination_period: int
     color: str
@@ -117,8 +128,8 @@ class LawnGrass(Product):
         self.color = color
 
 
+# ---------- Итератор и категория ----------
 class ProductIterator:
-    """Итератор по товарам категории."""
     def __init__(self, category: "Category") -> None:
         self._products = category._Category__products
         self._index = 0
@@ -134,7 +145,7 @@ class ProductIterator:
         return product
 
 
-class Category:
+class Category(AbstractProductCollection):
     total_categories: int = 0
     total_products: int = 0
     name: str
@@ -155,11 +166,19 @@ class Category:
     def __iter__(self) -> ProductIterator:
         return ProductIterator(self)
 
+    # Реализация абстрактных свойств
     @property
-    def products(self) -> str:
-        if not self.__products:
-            return ""
-        return "\n".join(str(p) for p in self.__products) + "\n"
+    def products(self) -> List[Product]:
+        """Возвращает копию списка товаров (безопасный доступ)."""
+        return self.__products.copy()
+
+    @property
+    def total_quantity(self) -> int:
+        return sum(p.quantity for p in self.__products)
+
+    @property
+    def total_cost(self) -> float:
+        return sum(p.price * p.quantity for p in self.__products)
 
     @property
     def product_count(self) -> int:
@@ -170,3 +189,37 @@ class Category:
             raise TypeError("В категорию можно добавлять только продукты (BaseProduct или наследники)")
         self.__products.append(product)
         Category.total_products += 1
+
+
+# ---------- Класс Заказ ----------
+class Order(AbstractProductCollection):
+    """Заказ на покупку одного товара в определённом количестве."""
+
+    def __init__(self, product: Product, quantity: int) -> None:
+        """
+        product – товар, который покупают.
+        quantity – количество единиц товара (целое положительное число).
+        """
+        if not isinstance(product, BaseProduct):
+            raise TypeError("В заказ можно добавить только продукт (BaseProduct или наследник)")
+        if quantity <= 0:
+            raise ValueError("Количество должно быть положительным")
+        self._product = product
+        self._quantity = quantity
+
+    @property
+    def products(self) -> List[Product]:
+        """Заказ всегда содержит один товар, возвращаем его в списке."""
+        return [self._product]
+
+    @property
+    def total_quantity(self) -> int:
+        return self._quantity
+
+    @property
+    def total_cost(self) -> float:
+        return self._product.price * self._quantity
+
+    def __str__(self) -> str:
+        return (f"Заказ: {self._product.name}, "
+                f"{self._quantity} шт. × {self._product.price:.2f} руб. = {self.total_cost:.2f} руб.")

@@ -2,29 +2,23 @@ from src.models import Product, Category
 from src.utils import load_categories_from_json
 
 
+from src.utils import load_categories_from_json
+from src.models import Product, Category, Order, Smartphone, LawnGrass
+
 def main():
-    # Пример создания товара через класс-метод
-    data = {
-        "name": "Наушники",
-        "description": "Беспроводные, с шумоподавлением",
-        "price": 7999.00,
-        "quantity": 12
-    }
-    headphones = Product.new_product(data)
-    print("Создан товар через new_product:")
-    print(f"{headphones.name}, {headphones.price:.0f} руб. Остаток: {headphones.quantity} шт.\n")
+    # Пример заказа
+    phone = Smartphone("iPhone 15", "512GB", 99999.0, 5, 3.2, "15", 512, "серый")
+    order = Order(phone, 2)
+    print(order)  # Заказ: iPhone 15, 2 шт. × 99999.00 руб. = 199998.00 руб.
+    print()
 
-    # Загружаем категории из JSON (как раньше)
     categories = load_categories_from_json('data/products.json')
-    print(f"Загружено категорий: {Category.total_categories}")
-    print(f"Загружено товаров: {Category.total_products}\n")
-
     for cat in categories:
-        print(f"Категория: {cat.name} ({cat.product_count} товаров)")
-        if cat.product_count > 0:
-            print(cat.products)
+        print(cat)   # Категория, количество продуктов: X шт.
+        for p in cat:
+            print(f"  {p}")   # использует Product.__str__
+        print(f"  Общая стоимость: {cat.total_cost:.2f} руб.")
         print()
-
 
 if __name__ == "__main__":
     main()
