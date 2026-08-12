@@ -1,17 +1,54 @@
+from abc import ABC, abstractmethod
 from typing import List, Optional
 
 
-class Product:
-    """Базовый класс для всех товаров."""
+class BaseProduct(ABC):
+    """
+    Абстрактный базовый класс для всех продуктов.
+    Определяет общие атрибуты и поведение
+    """
     name: str
     description: str
     quantity: int
 
-    def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
+    def __init__(self, name: str, description: str, quantity: int) -> None:
         self.name = name
         self.description = description
-        self.__price = price
         self.quantity = quantity
+
+    @property
+    @abstractmethod
+    def price(self) -> float:
+        """Абстрактное свойство цены. Должно быть переопределено в подклассах."""
+        pass
+
+    @price.setter
+    @abstractmethod
+    def price(self, value: float) -> None:
+        pass
+
+    def __str__(self) -> str:
+        """Строковое представление продукта."""
+        return f"{self.name}, {self.price:.0f} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other: "BaseProduct") -> float:
+        """
+        Сложение продуктов одного типа.
+        Возвращает суммарную стоимость (цена * количество) обоих продуктов.
+        """
+        if type(self) is not type(other):
+            raise TypeError("Нельзя складывать товары разных типов")
+        return self.price * self.quantity + other.price * other.quantity
+
+
+class Product(BaseProduct):
+    """
+    Базовый класс товара. Реализует приватное свойство price с проверками.
+    Может использоваться самостоятельно или как родитель для специализированных товаров.
+    """
+    def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
+        super().__init__(name, description, quantity)   # передаём только общие поля
+        self.__price = price                            # устанавливаем начальную цену напрямую
 
     @property
     def price(self) -> float:
@@ -31,16 +68,9 @@ class Product:
         else:
             self.__price = value
 
-    def __str__(self) -> str:
-        return f"{self.name}, {self.price:.0f} руб. Остаток: {self.quantity} шт."
-
-    def __add__(self, other: "Product") -> float:
-        if type(self) is not type(other):
-            raise TypeError("Нельзя складывать товары разных типов")
-        return self.price * self.quantity + other.price * other.quantity
-
     @classmethod
     def new_product(cls, data: dict) -> "Product":
+        """Создаёт Product из словаря. Подходит только для базового класса."""
         return cls(
             name=data["name"],
             description=data["description"],
@@ -50,7 +80,7 @@ class Product:
 
 
 class Smartphone(Product):
-    """Смартфоны."""
+    """Класс для смартфонов."""
     efficiency: float
     model: str
     memory: int
@@ -66,7 +96,7 @@ class Smartphone(Product):
 
 
 class LawnGrass(Product):
-    """Трава газонная."""
+    """Класс для травы газонной."""
     country: str
     germination_period: int
     color: str
@@ -128,7 +158,7 @@ class Category:
         return len(self.__products)
 
     def add_product(self, product: Product) -> None:
-        if not isinstance(product, Product):
-            raise TypeError("В категорию можно добавлять только продукты (Product или его наследники)")
+        if not isinstance(product, BaseProduct):
+            raise TypeError("В категорию можно добавлять только продукты (BaseProduct или наследники)")
         self.__products.append(product)
         Category.total_products += 1
