@@ -19,7 +19,6 @@ class BaseProduct(ABC):
     @property
     @abstractmethod
     def price(self) -> float:
-        """Абстрактное свойство цены. Должно быть переопределено в подклассах."""
         pass
 
     @price.setter
@@ -28,27 +27,37 @@ class BaseProduct(ABC):
         pass
 
     def __str__(self) -> str:
-        """Строковое представление продукта."""
         return f"{self.name}, {self.price:.0f} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other: "BaseProduct") -> float:
-        """
-        Сложение продуктов одного типа.
-        Возвращает суммарную стоимость (цена * количество) обоих продуктов.
-        """
         if type(self) is not type(other):
             raise TypeError("Нельзя складывать товары разных типов")
         return self.price * self.quantity + other.price * other.quantity
 
 
-class Product(BaseProduct):
+class ProductInitMixin:
     """
-    Базовый класс товара. Реализует приватное свойство price с проверками.
-    Может использоваться самостоятельно или как родитель для специализированных товаров.
+    Миксин, выводящий информацию о создании объекта.
+    При вызове __init__ печатает строку вида: ИмяКласса(аргументы).
+    """
+    def __init__(self, *args, **kwargs) -> None:
+        args_repr = []
+        for a in args:
+            args_repr.append(repr(a))
+        for k, v in kwargs.items():
+            args_repr.append(f"{k}={repr(v)}")
+        print(f"{self.__class__.__name__}({', '.join(args_repr)})")
+        super().__init__(*args, **kwargs)
+
+
+class Product(ProductInitMixin, BaseProduct):
+    """
+    Базовый класс товара. Наследует миксин вывода информации и абстрактный BaseProduct.
     """
     def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
-        super().__init__(name, description, quantity)   # передаём только общие поля
-        self.__price = price                            # устанавливаем начальную цену напрямую
+        # Передаём общие поля в super().__init__ (попадает сначала в миксин, потом в BaseProduct)
+        super().__init__(name=name, description=description, quantity=quantity)
+        self.__price = price
 
     @property
     def price(self) -> float:
@@ -70,7 +79,6 @@ class Product(BaseProduct):
 
     @classmethod
     def new_product(cls, data: dict) -> "Product":
-        """Создаёт Product из словаря. Подходит только для базового класса."""
         return cls(
             name=data["name"],
             description=data["description"],
