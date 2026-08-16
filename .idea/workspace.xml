@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="208be70d-1e03-494e-8d8d-9132fb68642f" name="Changes" comment="добавлен миксин ProductInitMixin, выводящий параметры при создании объекта">
-      <change beforePath="$PROJECT_DIR$/.coverage" beforeDir="false" afterPath="$PROJECT_DIR$/.coverage" afterDir="false" />
+    <list default="true" id="208be70d-1e03-494e-8d8d-9132fb68642f" name="Changes" comment="создан отчет о покрытии тестов">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/htmlcov/class_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/htmlcov/class_index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/htmlcov/function_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/htmlcov/function_index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/htmlcov/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/htmlcov/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/htmlcov/status.json" beforeDir="false" afterPath="$PROJECT_DIR$/htmlcov/status.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/htmlcov/z_145eef247bfb46b6_models_py.html" beforeDir="false" afterPath="$PROJECT_DIR$/htmlcov/z_145eef247bfb46b6_models_py.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_utils.py" afterDir="false" />
     </list>
@@ -269,7 +264,23 @@
       <option name="project" value="LOCAL" />
       <updated>1786536602148</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="тесты миксина, класс Order, абстрактный класс коллекции">
+      <option name="closed" value="true" />
+      <created>1786537442148</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1786537442148</updated>
+    </task>
+    <task id="LOCAL-00021" summary="создан отчет о покрытии тестов">
+      <option name="closed" value="true" />
+      <created>1786537472999</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1786537472999</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -289,6 +300,8 @@
     <MESSAGE value="метод, который добавляет продукт в категорию был доработан так,чтобы не было возможности добавить вместо продукта или его наследников любой другой объект" />
     <MESSAGE value="добавлен абстрактный класс BaseProduct" />
     <MESSAGE value="добавлен миксин ProductInitMixin, выводящий параметры при создании объекта" />
-    <option name="LAST_COMMIT_MESSAGE" value="добавлен миксин ProductInitMixin, выводящий параметры при создании объекта" />
+    <MESSAGE value="тесты миксина, класс Order, абстрактный класс коллекции" />
+    <MESSAGE value="создан отчет о покрытии тестов" />
+    <option name="LAST_COMMIT_MESSAGE" value="создан отчет о покрытии тестов" />
   </component>
 </project>

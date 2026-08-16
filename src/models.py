@@ -2,31 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 
-# ---------- Абстрактная база для коллекций продуктов ----------
-class AbstractProductCollection(ABC):
-    """Абстрактный класс для объектов, содержащих продукты (категория, заказ)."""
-
-    @property
-    @abstractmethod
-    def products(self) -> List['Product']:
-        """Список товаров, входящих в коллекцию."""
-        pass
-
-    @property
-    @abstractmethod
-    def total_quantity(self) -> int:
-        """Общее количество единиц товара (сумма quantity)."""
-        pass
-
-    @property
-    @abstractmethod
-    def total_cost(self) -> float:
-        """Общая стоимость всех товаров (сумма price * quantity)."""
-        pass
-
-
-# ---------- Базовые продукты ----------
 class BaseProduct(ABC):
+    """Абстрактный базовый класс для всех продуктов."""
     name: str
     description: str
     quantity: int
@@ -55,14 +32,32 @@ class BaseProduct(ABC):
         return self.price * self.quantity + other.price * other.quantity
 
 
+class AbstractProductCollection(ABC):
+    """Абстрактный класс для коллекций продуктов."""
+    @property
+    @abstractmethod
+    def products(self) -> List['Product']:
+        pass
+
+    @property
+    @abstractmethod
+    def total_quantity(self) -> int:
+        pass
+
+    @property
+    @abstractmethod
+    def total_cost(self) -> float:
+        pass
+
+
 class ProductInitMixin:
     """Миксин, печатающий параметры при создании объекта."""
     def __init__(self, *args, **kwargs) -> None:
         args_repr = []
-        for a in args:
-            args_repr.append(repr(a))
-        for k, v in kwargs.items():
-            args_repr.append(f"{k}={repr(v)}")
+        for arg in args:
+            args_repr.append(repr(arg))
+        for key, value in kwargs.items():
+            args_repr.append(f"{key}={repr(value)}")
         print(f"{self.__class__.__name__}({', '.join(args_repr)})")
         super().__init__(*args, **kwargs)
 
@@ -128,7 +123,6 @@ class LawnGrass(Product):
         self.color = color
 
 
-# ---------- Итератор и категория ----------
 class ProductIterator:
     def __init__(self, category: "Category") -> None:
         self._products = category._Category__products
@@ -166,10 +160,8 @@ class Category(AbstractProductCollection):
     def __iter__(self) -> ProductIterator:
         return ProductIterator(self)
 
-    # Реализация абстрактных свойств
     @property
     def products(self) -> List[Product]:
-        """Возвращает копию списка товаров (безопасный доступ)."""
         return self.__products.copy()
 
     @property
@@ -191,17 +183,10 @@ class Category(AbstractProductCollection):
         Category.total_products += 1
 
 
-# ---------- Класс Заказ ----------
 class Order(AbstractProductCollection):
-    """Заказ на покупку одного товара в определённом количестве."""
-
     def __init__(self, product: Product, quantity: int) -> None:
-        """
-        product – товар, который покупают.
-        quantity – количество единиц товара (целое положительное число).
-        """
         if not isinstance(product, BaseProduct):
-            raise TypeError("В заказ можно добавить только продукт (BaseProduct или наследник)")
+            raise TypeError("В заказ можно добавить только продукт")
         if quantity <= 0:
             raise ValueError("Количество должно быть положительным")
         self._product = product
@@ -209,7 +194,6 @@ class Order(AbstractProductCollection):
 
     @property
     def products(self) -> List[Product]:
-        """Заказ всегда содержит один товар, возвращаем его в списке."""
         return [self._product]
 
     @property
@@ -222,4 +206,5 @@ class Order(AbstractProductCollection):
 
     def __str__(self) -> str:
         return (f"Заказ: {self._product.name}, "
-                f"{self._quantity} шт. × {self._product.price:.2f} руб. = {self.total_cost:.2f} руб.")
+                f"{self._quantity} шт. × {self._product.price:.2f} руб. = "
+                f"{self.total_cost:.2f} руб.")

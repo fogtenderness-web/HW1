@@ -1,6 +1,7 @@
 import pytest
-from src.utils import load_categories_from_json
+
 from src.models import Category
+from src.utils import load_categories_from_json
 
 
 @pytest.fixture(autouse=True)

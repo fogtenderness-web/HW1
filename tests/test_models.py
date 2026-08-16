@@ -1,6 +1,8 @@
 import builtins
+
 import pytest
-from src.models import Product, Smartphone, LawnGrass, Category
+
+from src.models import Category, LawnGrass, Product, Smartphone
 
 
 @pytest.fixture(autouse=True)
@@ -30,7 +32,7 @@ def test_new_product_from_dict():
         "name": "Тестовый товар",
         "description": "Описание",
         "price": 123.45,
-        "quantity": 7
+        "quantity": 7,
     }
     product = Product.new_product(data)
     assert product.name == "Тестовый товар"
@@ -40,12 +42,7 @@ def test_new_product_from_dict():
 
 
 def test_new_product_with_string_numbers():
-    data = {
-        "name": "Товар",
-        "description": "...",
-        "price": "99.99",
-        "quantity": "5"
-    }
+    data = {"name": "Товар", "description": "...", "price": "99.99", "quantity": "5"}
     product = Product.new_product(data)
     assert isinstance(product.price, float)
     assert isinstance(product.quantity, int)
@@ -60,15 +57,15 @@ def test_product_str():
 
 
 def test_product_addition():
-    p1 = Product("Товар A", "описание", 100.0, 10)   # стоимость 1000
-    p2 = Product("Товар B", "описание", 200.0, 2)     # стоимость 400
+    p1 = Product("Товар A", "описание", 100.0, 10)  # стоимость 1000
+    p2 = Product("Товар B", "описание", 200.0, 2)  # стоимость 400
     result = p1 + p2
     assert result == 1400.0
     assert isinstance(result, float)
 
 
 def test_product_addition_different_prices():
-    p1 = Product("A", "", 50.5, 3)   # 151.5
+    p1 = Product("A", "", 50.5, 3)  # 151.5
     p2 = Product("B", "", 99.99, 1)  # 99.99
     result = p1 + p2
     assert result == 251.49
@@ -99,6 +96,7 @@ def test_category_initialization_with_products():
     assert cat.total_quantity == 15
     assert cat.total_cost == 250.0  # 10*5 + 20*10 = 50+200=250
 
+
 def test_category_initialization_empty_list():
     cat = Category("Пусто", "Нет товаров", [])
     assert cat.product_count == 0
@@ -106,10 +104,12 @@ def test_category_initialization_empty_list():
     assert cat.total_quantity == 0
     assert cat.total_cost == 0.0
 
+
 def test_category_initialization_none():
     cat = Category("Пусто", "Описание", None)
     assert cat.product_count == 0
     assert cat.products == []
+
 
 def test_add_product():
     cat = Category("Тест", "Описание")
@@ -156,7 +156,9 @@ def test_product_price_getter():
 
 def test_product_price_setter_increase_no_input(monkeypatch):
     product = Product("Товар", "описание", 100.0, 5)
-    monkeypatch.setattr(builtins, "input", lambda _: pytest.fail("input не должен вызываться"))
+    monkeypatch.setattr(
+        builtins, "input", lambda _: pytest.fail("input не должен вызываться")
+    )
     product.price = 150.0
     assert product.price == 150.0
 
@@ -179,7 +181,9 @@ def test_product_price_setter_decrease_confirmation_no(monkeypatch, capsys):
 
 def test_product_price_setter_zero(monkeypatch, capsys):
     product = Product("Товар", "описание", 100.0, 5)
-    monkeypatch.setattr(builtins, "input", lambda _: pytest.fail("input не должен вызываться"))
+    monkeypatch.setattr(
+        builtins, "input", lambda _: pytest.fail("input не должен вызываться")
+    )
     product.price = 0
     captured = capsys.readouterr()
     assert "Цена не должна быть нулевая или отрицательная" in captured.out
@@ -188,7 +192,9 @@ def test_product_price_setter_zero(monkeypatch, capsys):
 
 def test_product_price_setter_negative(monkeypatch, capsys):
     product = Product("Товар", "описание", 100.0, 5)
-    monkeypatch.setattr(builtins, "input", lambda _: pytest.fail("input не должен вызываться"))
+    monkeypatch.setattr(
+        builtins, "input", lambda _: pytest.fail("input не должен вызываться")
+    )
     product.price = -10.0
     captured = capsys.readouterr()
     assert "Цена не должна быть нулевая или отрицательная" in captured.out
@@ -196,15 +202,12 @@ def test_product_price_setter_negative(monkeypatch, capsys):
 
 
 def test_product_init_mixin_output_product(capsys):
-    """Проверка вывода ProductInitMixin при создании Product."""
-    product = Product("Товар", "Описание", 50.0, 10)
+    _ = Product("Товар", "Описание", 50.0, 10)
     captured = capsys.readouterr()
-    # В текущей реализации передаются только общие поля (name, description, quantity)
     assert "Product(name='Товар', description='Описание', quantity=10)" in captured.out
 
 
 def test_product_init_mixin_output_smartphone(capsys):
-    """Проверка вывода для наследников (Smartphone)."""
-    phone = Smartphone("Samsung", "Модель", 30000.0, 5, 2.5, "S23", 128, "черный")
+    _ = Smartphone("Samsung", "Модель", 30000.0, 5, 2.5, "S23", 128, "черный")
     captured = capsys.readouterr()
     assert "Smartphone(name='Samsung', description='Модель', quantity=5)" in captured.out
