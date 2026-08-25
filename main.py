@@ -1,20 +1,29 @@
 from src.utils import load_categories_from_json
-from src.models import Category
+from src.models import Order, Smartphone
 
 
 def main():
+    # Пример заказа
+    phone = Smartphone(
+        "iPhone 15",
+        "512GB",
+        99999.0,
+        5,
+        3.2,
+        "15",
+        512,
+        "серый"
+    )
+    order = Order(phone, 2)
+    print(order)
+    print()
+
     categories = load_categories_from_json('data/products.json')
-
-    print(f"Загружено категорий: {Category.total_categories}")
-    print(f"Загружено товаров: {Category.total_products}\n")
-
-    for cat in categories:
-        print(f"Категория: {cat.name} ({len(cat.products)} товаров)")
-        for product in cat.products:
-            print(
-                f"  - {product.name}: {product.price:.2f} руб."
-                f" (в наличии: {product.quantity} шт.)"
-            )
+    for category in categories:
+        print(category)
+        for product in category:
+            print(f"  {product}")
+        print(f"  Общая стоимость: {category.total_cost:.2f} руб.")
         print()
 
 

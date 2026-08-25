@@ -5,9 +5,6 @@ from src.models import Category, Product
 
 
 def load_categories_from_json(file_path: str) -> List[Category]:
-    """
-    Читает JSON-файл с категориями и товарами.
-    """
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
