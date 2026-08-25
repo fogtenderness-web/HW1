@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="208be70d-1e03-494e-8d8d-9132fb68642f" name="Changes" comment="запрещено создание товара с нулевым количеством,добавлены тесты на исключение" />
+    <list default="true" id="208be70d-1e03-494e-8d8d-9132fb68642f" name="Changes" comment="добавлен метод average_price в Category с обработкой ZeroDivisionError">
+      <change beforePath="$PROJECT_DIR$/tests/test_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_models.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -297,7 +299,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787658157405</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="добавлен метод average_price в Category с обработкой ZeroDivisionError">
+      <option name="closed" value="true" />
+      <created>1787658542878</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1787658542878</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -322,6 +332,7 @@
     <MESSAGE value="исправлены замечания flake8 (неиспользуемый импорт, переводы строк)" />
     <MESSAGE value="в описание проекта добавлены новые функции" />
     <MESSAGE value="запрещено создание товара с нулевым количеством,добавлены тесты на исключение" />
-    <option name="LAST_COMMIT_MESSAGE" value="запрещено создание товара с нулевым количеством,добавлены тесты на исключение" />
+    <MESSAGE value="добавлен метод average_price в Category с обработкой ZeroDivisionError" />
+    <option name="LAST_COMMIT_MESSAGE" value="добавлен метод average_price в Category с обработкой ZeroDivisionError" />
   </component>
 </project>

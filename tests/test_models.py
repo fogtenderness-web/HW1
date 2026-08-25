@@ -2,7 +2,14 @@ import builtins
 
 import pytest
 
-from src.models import Category, LawnGrass, Product, Smartphone
+from src.models import (
+    Category,
+    LawnGrass,
+    Order,
+    Product,
+    Smartphone,
+    ZeroQuantityProductError,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -210,7 +217,9 @@ def test_product_init_mixin_output_product(capsys):
 def test_product_init_mixin_output_smartphone(capsys):
     _ = Smartphone("Samsung", "Модель", 30000.0, 5, 2.5, "S23", 128, "черный")
     captured = capsys.readouterr()
-    assert "Smartphone(name='Samsung', description='Модель', quantity=5)" in captured.out
+    assert (
+        "Smartphone(name='Samsung', description='Модель', quantity=5)" in captured.out
+    )
 
 
 def test_product_zero_quantity_raises_value_error():
@@ -228,9 +237,50 @@ def test_category_average_price():
     p1 = Product("A", "", 100.0, 5)
     p2 = Product("B", "", 200.0, 3)
     cat = Category("Тест", "Описание", [p1, p2])
-    assert cat.average_price() == 150.0   # (100 + 200) / 2 = 150
+    assert cat.average_price() == 150.0  # (100 + 200) / 2 = 150
 
 
 def test_category_average_price_empty():
     cat = Category("Пусто", "Нет товаров")
     assert cat.average_price() == 0
+
+
+def test_add_product_success_message(capsys):
+    cat = Category("Тест", "Описание")
+    product = Product("Товар", "Описание", 100.0, 5)
+    cat.add_product(product)
+    captured = capsys.readouterr()
+    assert "Товар добавлен" in captured.out
+    assert "Обработка добавления товара завершена" in captured.out
+    assert cat.product_count == 1
+
+
+def test_add_product_zero_quantity_raises(capsys):
+    cat = Category("Тест", "Описание")
+    product = Product("Товар", "Описание", 100.0, 1)
+    product.quantity = 0  # имитируем нулевое количество вручную
+    with pytest.raises(ZeroQuantityProductError):
+        cat.add_product(product)
+    captured = capsys.readouterr()
+    assert "Товар с нулевым количеством не может быть добавлен" in captured.out
+    assert "Обработка добавления товара завершена" in captured.out
+    assert cat.product_count == 0
+
+
+def test_order_success_message(capsys):
+    product = Product("Товар", "Описание", 100.0, 5)
+    order = Order(product, 2)
+    captured = capsys.readouterr()
+    assert "Товар добавлен" in captured.out
+    assert "Обработка добавления товара завершена" in captured.out
+    assert order.total_quantity == 2
+
+
+def test_order_zero_quantity_product_raises(capsys):
+    product = Product("Товар", "Описание", 100.0, 1)
+    product.quantity = 0
+    with pytest.raises(ZeroQuantityProductError):
+        Order(product, 2)
+    captured = capsys.readouterr()
+    assert "Товар с нулевым количеством не может быть добавлен" in captured.out
+    assert "Обработка добавления товара завершена" in captured.out

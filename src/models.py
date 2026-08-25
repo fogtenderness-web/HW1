@@ -2,8 +2,19 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 
+class ZeroQuantityProductError(Exception):
+    """Исключение, возникающее при попытке добавить товар с нулевым количеством."""
+
+    def __init__(
+        self, message: str = "Товар с нулевым количеством не может быть добавлен"
+    ) -> None:
+        self.message = message
+        super().__init__(self.message)
+
+
 class BaseProduct(ABC):
     """Абстрактный базовый класс для всех продуктов."""
+
     name: str
     description: str
     quantity: int
@@ -36,9 +47,10 @@ class BaseProduct(ABC):
 
 class AbstractProductCollection(ABC):
     """Абстрактный класс для коллекций продуктов."""
+
     @property
     @abstractmethod
-    def products(self) -> List['Product']:
+    def products(self) -> List["Product"]:
         pass
 
     @property
@@ -54,6 +66,7 @@ class AbstractProductCollection(ABC):
 
 class ProductInitMixin:
     """Миксин, печатающий параметры при создании объекта."""
+
     def __init__(self, *args, **kwargs) -> None:
         args_repr = []
         for arg in args:
@@ -65,7 +78,11 @@ class ProductInitMixin:
 
 
 class Product(ProductInitMixin, BaseProduct):
-    def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
+    """Базовый класс товара."""
+
+    def __init__(
+        self, name: str, description: str, price: float, quantity: int
+    ) -> None:
         super().__init__(name=name, description=description, quantity=quantity)
         self.__price = price
 
@@ -79,7 +96,9 @@ class Product(ProductInitMixin, BaseProduct):
             print("Цена не должна быть нулевая или отрицательная")
             return
         if value < self.__price:
-            answer = input("Вы действительно хотите понизить цену? (y/n): ").strip().lower()
+            answer = (
+                input("Вы действительно хотите понизить цену? (y/n): ").strip().lower()
+            )
             if answer == "y":
                 self.__price = value
             else:
@@ -93,18 +112,29 @@ class Product(ProductInitMixin, BaseProduct):
             name=data["name"],
             description=data["description"],
             price=float(data["price"]),
-            quantity=int(data["quantity"])
+            quantity=int(data["quantity"]),
         )
 
 
 class Smartphone(Product):
+    """Смартфоны."""
+
     efficiency: float
     model: str
     memory: int
     color: str
 
-    def __init__(self, name: str, description: str, price: float, quantity: int,
-                 efficiency: float, model: str, memory: int, color: str) -> None:
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        price: float,
+        quantity: int,
+        efficiency: float,
+        model: str,
+        memory: int,
+        color: str,
+    ) -> None:
         super().__init__(name, description, price, quantity)
         self.efficiency = efficiency
         self.model = model
@@ -113,12 +143,22 @@ class Smartphone(Product):
 
 
 class LawnGrass(Product):
+    """Трава газонная."""
+
     country: str
     germination_period: int
     color: str
 
-    def __init__(self, name: str, description: str, price: float, quantity: int,
-                 country: str, germination_period: int, color: str) -> None:
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        price: float,
+        quantity: int,
+        country: str,
+        germination_period: int,
+        color: str,
+    ) -> None:
         super().__init__(name, description, price, quantity)
         self.country = country
         self.germination_period = germination_period
@@ -126,6 +166,8 @@ class LawnGrass(Product):
 
 
 class ProductIterator:
+    """Итератор по товарам категории."""
+
     def __init__(self, category: "Category") -> None:
         self._products = category._Category__products
         self._index = 0
@@ -142,12 +184,16 @@ class ProductIterator:
 
 
 class Category(AbstractProductCollection):
+    """Категория товаров."""
+
     total_categories: int = 0
     total_products: int = 0
     name: str
     description: str
 
-    def __init__(self, name: str, description: str, products: Optional[List[Product]] = None) -> None:
+    def __init__(
+        self, name: str, description: str, products: Optional[List[Product]] = None
+    ) -> None:
         self.name = name
         self.description = description
         self.__products: List[Product] = list(products) if products else []
@@ -179,16 +225,23 @@ class Category(AbstractProductCollection):
         return len(self.__products)
 
     def add_product(self, product: Product) -> None:
-        if not isinstance(product, BaseProduct):
-            raise TypeError("В категорию можно добавлять только продукты (BaseProduct или наследники)")
-        self.__products.append(product)
-        Category.total_products += 1
+        try:
+            if not isinstance(product, BaseProduct):
+                raise TypeError(
+                    "В категорию можно добавлять только продукты (BaseProduct или наследники)"
+                )
+            if product.quantity == 0:
+                raise ZeroQuantityProductError()
+            self.__products.append(product)
+            Category.total_products += 1
+            print("Товар добавлен")
+        except ZeroQuantityProductError as e:
+            print(e)
+            raise
+        finally:
+            print("Обработка добавления товара завершена")
 
     def average_price(self) -> float:
-        """
-        Возвращает среднюю цену товаров в категории.
-        Если товаров нет, возвращает 0.
-        """
         try:
             total_price = sum(product.price for product in self.__products)
             return total_price / len(self.__products)
@@ -197,13 +250,24 @@ class Category(AbstractProductCollection):
 
 
 class Order(AbstractProductCollection):
+    """Заказ на один товар."""
+
     def __init__(self, product: Product, quantity: int) -> None:
-        if not isinstance(product, BaseProduct):
-            raise TypeError("В заказ можно добавить только продукт")
-        if quantity <= 0:
-            raise ValueError("Количество должно быть положительным")
-        self._product = product
-        self._quantity = quantity
+        try:
+            if not isinstance(product, BaseProduct):
+                raise TypeError("В заказ можно добавить только продукт")
+            if product.quantity == 0:
+                raise ZeroQuantityProductError()
+            if quantity <= 0:
+                raise ValueError("Количество должно быть положительным")
+            self._product = product
+            self._quantity = quantity
+            print("Товар добавлен")
+        except ZeroQuantityProductError as e:
+            print(e)
+            raise
+        finally:
+            print("Обработка добавления товара завершена")
 
     @property
     def products(self) -> List[Product]:
@@ -218,6 +282,8 @@ class Order(AbstractProductCollection):
         return self._product.price * self._quantity
 
     def __str__(self) -> str:
-        return (f"Заказ: {self._product.name}, "
-                f"{self._quantity} шт. × {self._product.price:.2f} руб. = "
-                f"{self.total_cost:.2f} руб.")
+        return (
+            f"Заказ: {self._product.name}, "
+            f"{self._quantity} шт. × {self._product.price:.2f} руб. = "
+            f"{self.total_cost:.2f} руб."
+        )
