@@ -222,3 +222,15 @@ def test_product_zero_quantity_raises_value_error():
 def test_smartphone_zero_quantity_raises():
     with pytest.raises(ValueError):
         Smartphone("Phone", "desc", 100.0, 0, 2.0, "Model", 64, "black")
+
+
+def test_category_average_price():
+    p1 = Product("A", "", 100.0, 5)
+    p2 = Product("B", "", 200.0, 3)
+    cat = Category("Тест", "Описание", [p1, p2])
+    assert cat.average_price() == 150.0   # (100 + 200) / 2 = 150
+
+
+def test_category_average_price_empty():
+    cat = Category("Пусто", "Нет товаров")
+    assert cat.average_price() == 0
