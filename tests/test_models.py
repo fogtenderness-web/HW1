@@ -211,3 +211,14 @@ def test_product_init_mixin_output_smartphone(capsys):
     _ = Smartphone("Samsung", "Модель", 30000.0, 5, 2.5, "S23", 128, "черный")
     captured = capsys.readouterr()
     assert "Smartphone(name='Samsung', description='Модель', quantity=5)" in captured.out
+
+
+def test_product_zero_quantity_raises_value_error():
+    with pytest.raises(ValueError) as exc_info:
+        Product("Товар", "Описание", 100.0, 0)
+    assert str(exc_info.value) == "Товар с нулевым количеством не может быть добавлен"
+
+
+def test_smartphone_zero_quantity_raises():
+    with pytest.raises(ValueError):
+        Smartphone("Phone", "desc", 100.0, 0, 2.0, "Model", 64, "black")
