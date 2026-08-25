@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="208be70d-1e03-494e-8d8d-9132fb68642f" name="Changes" comment="добавлен метод average_price в Category с обработкой ZeroDivisionError">
-      <change beforePath="$PROJECT_DIR$/tests/test_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_models.py" afterDir="false" />
+    <list default="true" id="208be70d-1e03-494e-8d8d-9132fb68642f" name="Changes" comment="- Реализован класс ZeroQuantityProductError&#10;- В Category.add_product и Order.__init__ добавлена проверка нулевого количества&#10;- При успешном добавлении выводится 'Товар добавлен', при ошибке — сообщение исключения&#10;- В любом случае выводится 'Обработка добавления товара завершена'&#10;- Добавлены тесты на новые сценарии">
+      <change beforePath="$PROJECT_DIR$/README.MD" beforeDir="false" afterPath="$PROJECT_DIR$/README.MD" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -307,7 +307,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787658542878</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="- Реализован класс ZeroQuantityProductError&#10;- В Category.add_product и Order.__init__ добавлена проверка нулевого количества&#10;- При успешном добавлении выводится 'Товар добавлен', при ошибке — сообщение исключения&#10;- В любом случае выводится 'Обработка добавления товара завершена'&#10;- Добавлены тесты на новые сценарии">
+      <option name="closed" value="true" />
+      <created>1787658854902</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1787658854902</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -333,6 +341,7 @@
     <MESSAGE value="в описание проекта добавлены новые функции" />
     <MESSAGE value="запрещено создание товара с нулевым количеством,добавлены тесты на исключение" />
     <MESSAGE value="добавлен метод average_price в Category с обработкой ZeroDivisionError" />
-    <option name="LAST_COMMIT_MESSAGE" value="добавлен метод average_price в Category с обработкой ZeroDivisionError" />
+    <MESSAGE value="- Реализован класс ZeroQuantityProductError&#10;- В Category.add_product и Order.__init__ добавлена проверка нулевого количества&#10;- При успешном добавлении выводится 'Товар добавлен', при ошибке — сообщение исключения&#10;- В любом случае выводится 'Обработка добавления товара завершена'&#10;- Добавлены тесты на новые сценарии" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Реализован класс ZeroQuantityProductError&#10;- В Category.add_product и Order.__init__ добавлена проверка нулевого количества&#10;- При успешном добавлении выводится 'Товар добавлен', при ошибке — сообщение исключения&#10;- В любом случае выводится 'Обработка добавления товара завершена'&#10;- Добавлены тесты на новые сценарии" />
   </component>
 </project>
